@@ -5,5 +5,4 @@
 #include "aghContainer.h"
 #include "aghVector.h"    
 
-
 #endif // AGHINCLUDE_H_INCLUDED
