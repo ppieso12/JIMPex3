@@ -15,7 +15,7 @@ public:
 
     //aghContainer(const aghContainer<T> &obj);
 
-   // virtual ~aghContainer();
+    //virtual ~aghContainer();
 
     /////////////////
     //METODY BAZOWE//
@@ -93,7 +93,7 @@ public:
 
     /// \brief wypisuje zawartoœæ pojemnika na strumieñ.
     /// <maybe wrong?>
-    friend ostream& operator<<(ostream&, aghContainer<T> const&);
+    template <typename U> friend ostream& operator<<(ostream&, aghContainer<U> const&);
     //template <typename U> friend ostream& operator<<(ostream&, aghContainer<U> const& right);
 
     /// \brief Metoda pomocnicza dodajaca element ze zwracaniem referencji
@@ -114,11 +114,11 @@ public:
 
     /// \brief Metoda sprawdzajaca czy w okreslonym kontenerze znajduje sie wolny obszar w zaalokowanej pamieci
     /// <clean>
-    virtual bool is_free_space(void) = 0;
+    //virtual bool is_free_space(void) = 0;
 
     /// \brief Metoda rozszerzajaca rozmiar kontenera
     /// <clean>
-    virtual void broaden_container_memory(void) = 0;
+    //virtual void broaden_container_memory(void) = 0;
 
     /// \brief wstawiaj¹ca obiekt typu T w wybrane miejsce.
     /// <clean>
@@ -146,7 +146,7 @@ public:
 
     /// \brief Metoda Zwracajaca index ostatniego elementu
     /// <clean>
-    virtual int last_index(void) = 0;
+    virtual int last_index(void) const = 0;
 };
     /////////////////
     //METODY BAZOWE//
@@ -155,25 +155,10 @@ public:
 template <typename T>
 void aghContainer<T>::append(T const &item)
 {
-    int Container_Size = this->size();
     int last_item = this->last_index();
+    cout << last_item << endl;
+    this->insert(last_item + 1, item);
 
-    if(Container_Size == 0)
-    {
-        this->insert(0, item);
-
-    }else
-    {
-        if(this->is_free_space())
-        {
-            this->insert(last_item + 1, item);
-
-        }else
-        {
-            this->broaden_container_memory();
-            this->insert(last_item + 1, item);
-        }
-    }
 }
 template <typename T>
 bool aghContainer<T>::replace(int Chosen_position, T const &item)
@@ -320,7 +305,8 @@ aghContainer<T>& aghContainer<T>::addone(T const& element)
 template <typename T>
 aghContainer<T>& aghContainer<T>::addall(aghContainer<T> const& right)
 {
-    int Container_Right_Size = right.size();
+
+    int Container_Right_Size = right.last_index();
 
     for(int i = 0; i <= Container_Right_Size; i++)
     {
@@ -342,20 +328,28 @@ aghContainer<T>& aghContainer<T>::operator+=(T const& element)
 template <typename T>
 aghContainer<T>& aghContainer<T>::operator<<(T const& element)
 {
+    cout << "WIELKITEST" << endl;
     return this->addone(element);
 }
 template <typename T>
 aghContainer<T>& aghContainer<T>::operator<<(aghContainer<T> const& right)
 {
+    cout << "WIELKITEST" << endl;
     return this->addall(right);
 }
 
 template <typename T>
 ostream& operator<<(ostream& os, aghContainer<T> const& right)
 {
-    int Container_Size = right.size();
+    //cout << "TEST!!!" <<endl;
+    int last_elem = right.last_index();
 
-    for(int i = 0; i < Container_Size; i++)
+    if(last_elem == -1)
+    {
+        os << "EMPTY" << endl;
+    }
+
+    for(int i = 0; i <= last_elem; i++)
     {
         os << i << "." << right.at(i) << endl;
     }

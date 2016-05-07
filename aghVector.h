@@ -8,7 +8,7 @@ class aghVector: public aghContainer<T>
 {
 private:
 
-    T *tab_ptr;         ///< wskaznik do tablicy typow T
+    T **tab_ptr;         ///< wskaznik do wskaznikow dla elementow typu T
     int total_length;   ///< calkowity rozmiar zaalokowanej pamieci
     int last_item;      ///< index ostatniego poprawnego elementu
     int Size;           ///< ilosc elementow w vectorze
@@ -44,17 +44,22 @@ public:
     /// <done>
     void free_memory(void);
 
-    //////////////////////////////////
-    //METODY WIRTUALNE DLA AGHVECTOR//
-    //////////////////////////////////
-
     /// \brief Metoda sprawdzajaca czy w okreslonym kontenerze znajduje sie wolny obszar w zaalokowanej pamieci
     /// <done>
-    virtual bool is_free_space(void);
+    bool is_free_space(void);
 
     /// \brief Metoda rozszerzajaca rozmiar kontenera o 50% (rozmiar rzutowany do int)
     /// <done>
-    virtual void broaden_container_memory(void);
+    void broaden_container_memory(void);
+    void broaden_container_memory(int new_size);
+
+    /// \brief Metoda rozszerzajaca rozmiar kontenera o 50% (rozmiar rzutowany do int)
+    /// <done>
+    int last_elem_pos(void);
+
+    //////////////////////////////////
+    //METODY WIRTUALNE DLA AGHVECTOR//
+    //////////////////////////////////
 
     /// \brief wstawiaj¹ca obiekt typu T w wybrane miejsce.
     /// <done>
@@ -82,7 +87,7 @@ public:
 
     /// \brief Metoda Zwracajaca index ostatniego elementu
     /// <done>
-    virtual int last_index(void);
+    virtual int last_index(void) const;
 
     //////////////////////////
     //PRZELADOWANE OPERATORY//
@@ -124,7 +129,9 @@ aghVector<T>::aghVector(aghContainer<T> &arg_obj)
 
     for(int i = 0; i <= derived_ptr->last_item; i++)
     {
-        this->tab_ptr[i] = derived_ptr->tab_ptr[i];
+        T *item = new T;
+        *item = *(derived_ptr->tab_ptr[i]);
+        this->tab_ptr[i] = item;
     }
 }
 template <typename T>
@@ -139,22 +146,41 @@ aghVector<T>::~aghVector()
 template <typename T>
 void aghVector<T>::allocate_memory(int new_size)
 {
-    this->tab_ptr = new T [new_size +1];
-
+    this->tab_ptr = new T *[new_size +1];
+    for(int i = 0; i <= new_size; i++)
+    {
+        this->tab_ptr[i] = NULL;
+    }
 }
 template <typename T>
 void aghVector<T>::free_memory(void)
 {
+    for(int i = 0; i <= this->last_item; i++)
+    {
+        if(this->tab_ptr[i] != NULL) delete[] tab_ptr[i];
+    }
     delete []tab_ptr;
     tab_ptr = NULL;
     this->total_length = 0;
     this->Size = 0;
     this->last_item = -1;
+    cout << "Usuniety" << endl;
+}
+template <typename T>
+int aghVector<T>::last_elem_pos(void)
+{
+    int index;
+    for(int i = 0; i <= this->total_length; i++)
+    {
+        if(this->tab_ptr[i] != NULL)
+        {
+            index = i;
+        }
+    }
+    return index;
 }
 
-    ///////////////////////////////
-    //DEFINICJE METOD WIRTUALNYCH//
-    ///////////////////////////////
+
 
 template <typename T>
 bool aghVector<T>::is_free_space(void)
@@ -171,16 +197,23 @@ bool aghVector<T>::is_free_space(void)
 template <typename T>
 void aghVector<T>::broaden_container_memory(void)
 {
+    //cout<< "test!!!default"<< endl;
     int new_size = (int)(this->total_length * 1.5);
 
-    T *bufor = new T [new_size + 1];
+    T **bufor = new T * [new_size + 1];
 
     int last_prev_element = this->last_item;
     int prev_Size = this->Size;
 
     for(int i = 0;i <= last_prev_element; i++)
     {
-        bufor[i] = this->tab_ptr[i];
+        T *item = new T;
+        *item = *(this->tab_ptr[i]);
+        bufor[i] = item;
+    }
+    for(int i = last_prev_element + 1;i <= new_size; i++)
+    {
+        bufor[i] = NULL;
     }
     this->free_memory();
     this->allocate_memory(new_size);
@@ -192,22 +225,66 @@ void aghVector<T>::broaden_container_memory(void)
     this->last_item = last_prev_element;
 }
 template <typename T>
+void aghVector<T>::broaden_container_memory(int new_size)
+{
+    //cout<< "test!!!param"<< endl;
+    T **bufor = new T * [new_size + 1];
+
+    int last_prev_element = this->last_item;
+    int prev_Size = this->Size;
+
+    for(int i = 0;i <= last_prev_element; i++)
+    {
+        T *item = new T;
+        *item = *(this->tab_ptr[i]);
+        bufor[i] = item;
+    }
+    for(int i = last_prev_element + 1;i <= new_size; i++)
+    {
+        bufor[i] = NULL;
+    }
+    this->free_memory();
+    this->allocate_memory(new_size);
+
+    this->tab_ptr = bufor;
+
+    this->total_length = new_size;
+    this->Size = prev_Size;
+    this->last_item = last_prev_element;
+}
+
+    ///////////////////////////////
+    //DEFINICJE METOD WIRTUALNYCH//
+    ///////////////////////////////
+
+template <typename T>
 bool aghVector<T>::insert(int position, T const& item)
 {
-    if(position <= total_length)
-    {
-        this->tab_ptr[position] = item;
-        if(position > this->last_item)
-        {
-            this->Size++;
-            this->last_item = position;
-        }
-        return true;
+    if(this->total_length < position) this->broaden_container_memory();  //Czy zaalokowano miejsce na wskazniki
 
-    }else
-    {
-        return false;
-    }
+        if(this->tab_ptr[position] == NULL)  //puste miejsce
+        {
+            T *itemptr = new T;
+            *itemptr = item;
+            this->tab_ptr[position] = itemptr;
+            this->last_item = this->last_elem_pos();
+            this->Size++;
+        }else
+        {
+            if(this->last_item + 1 > total_length) this->broaden_container_memory();
+
+            for(int i = this->last_item; i>= position; i--)
+            {
+
+                this->tab_ptr[i + 1] = this->tab_ptr[i];
+            }
+
+            T *itemptr = new T;
+            *itemptr = item;
+            this->tab_ptr[position] = itemptr;
+            this->last_item++;
+            this->Size++;
+        }
 }
 template <typename T>
 T& aghVector<T>::at(int position) const throw(aghException)
@@ -218,7 +295,7 @@ T& aghVector<T>::at(int position) const throw(aghException)
 
     }else
     {
-        return this->tab_ptr[position];
+        return *(this->tab_ptr[position]);
     }
 }
 template <typename T>
@@ -228,7 +305,7 @@ int aghVector<T>::size(void) const
 }
 template <typename T>
 bool aghVector<T>::remove(int position)
-{
+{/*
     if(position > last_item) return false;
 
     for(int i = position; i <= last_item - 1; i++)
@@ -239,7 +316,7 @@ bool aghVector<T>::remove(int position)
     this->last_item--;
     this->Size--;
 
-    return true;
+    return true;*/
 }
 template <typename T>
 void aghVector<T>::kill_them_all(void)
@@ -247,7 +324,7 @@ void aghVector<T>::kill_them_all(void)
     this->free_memory();
 }
 template <typename T>
-int aghVector<T>::last_index(void)
+int aghVector<T>::last_index(void) const
 {
     return this->last_item;
 }
@@ -258,7 +335,7 @@ int aghVector<T>::last_index(void)
 
 template <typename T>
 aghVector<T>& aghVector<T>::operator=(const aghVector<T> & aghVc)
-{
+{/*
     if(this == &aghVc) return *this;
 
     this->free_memory();
@@ -275,7 +352,7 @@ aghVector<T>& aghVector<T>::operator=(const aghVector<T> & aghVc)
 
     this->last_item = aghVc.last_item;
 
-    return *this;
+    return *this;*/
 }
 
 
