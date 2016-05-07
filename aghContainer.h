@@ -93,7 +93,7 @@ public:
 
     /// \brief wypisuje zawartoœæ pojemnika na strumieñ.
     /// <maybe wrong?>
-   // friend ostream& operator<<(ostream&, aghContainer<T> const&);
+    friend ostream& operator<<(ostream&, aghContainer<T> const&);
     //template <typename U> friend ostream& operator<<(ostream&, aghContainer<U> const& right);
 
     /// \brief Metoda pomocnicza dodajaca element ze zwracaniem referencji
@@ -143,6 +143,10 @@ public:
     /// \brief Metoda niszczaca kontener
     /// <clean>
     virtual void kill_them_all(void) = 0;
+
+    /// \brief Metoda Zwracajaca index ostatniego elementu
+    /// <clean>
+    virtual int last_index(void) = 0;
 };
     /////////////////
     //METODY BAZOWE//
@@ -152,15 +156,23 @@ template <typename T>
 void aghContainer<T>::append(T const &item)
 {
     int Container_Size = this->size();
+    int last_item = this->last_index();
 
-    if(this->is_free_space())
+    if(Container_Size == 0)
     {
-        this->insert(Container_Size + 1, item);
+        this->insert(0, item);
 
     }else
     {
-        this->broaden_container_memory();
-        this->insert(Container_Size + 1, item);
+        if(this->is_free_space())
+        {
+            this->insert(last_item + 1, item);
+
+        }else
+        {
+            this->broaden_container_memory();
+            this->insert(last_item + 1, item);
+        }
     }
 }
 template <typename T>
@@ -337,7 +349,7 @@ aghContainer<T>& aghContainer<T>::operator<<(aghContainer<T> const& right)
 {
     return this->addall(right);
 }
-/*
+
 template <typename T>
 ostream& operator<<(ostream& os, aghContainer<T> const& right)
 {
@@ -350,7 +362,7 @@ ostream& operator<<(ostream& os, aghContainer<T> const& right)
 
     return os;
 }
-*/
+
 
 
 
