@@ -13,9 +13,9 @@ private:
 
 public:
 
-    aghContainer(){};
+    //aghContainer(const aghContainer<T> &obj);
 
-    virtual ~aghContainer(){};
+   // virtual ~aghContainer();
 
     /////////////////
     //METODY BAZOWE//
@@ -55,17 +55,12 @@ public:
     /// \return wyszukuje i zwraca indeks pierwszego elementu o wartoœci _value zaczynaj¹c od elementu _from. Je¿eli takiego elementu nie ma to zwraca -1.
     int go_through_container(T const&, int) const;
 
-    /// \brief Metoda niszczaca kontener
-    ///
-    void kill_them_all(void){this->~aghContainer();};
-
-
     //////////////////////////
     //PRZELADOWANE OPERATORY//
     //////////////////////////
 
     /// \brief Przeciazony operator przypisania
-    ///
+    /// <maybe wrong?>
     aghContainer & operator=(const aghContainer & aghCt);
 
     /// \brief sprawdza czy zawartoœæ pojemników jest taka sama.
@@ -97,8 +92,9 @@ public:
     aghContainer<T>& operator<<(aghContainer<T> const& right);
 
     /// \brief wypisuje zawartoœæ pojemnika na strumieñ.
-    ///
-    template <typename U> friend ostream& operator<<(ostream&, aghContainer<U> const& right);
+    /// <maybe wrong?>
+   // friend ostream& operator<<(ostream&, aghContainer<T> const&);
+    //template <typename U> friend ostream& operator<<(ostream&, aghContainer<U> const& right);
 
     /// \brief Metoda pomocnicza dodajaca element ze zwracaniem referencji
     /// <done>
@@ -117,35 +113,36 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
 
     /// \brief Metoda sprawdzajaca czy w okreslonym kontenerze znajduje sie wolny obszar w zaalokowanej pamieci
-    ///
+    /// <clean>
     virtual bool is_free_space(void) = 0;
 
     /// \brief Metoda rozszerzajaca rozmiar kontenera
-    ///
+    /// <clean>
     virtual void broaden_container_memory(void) = 0;
 
     /// \brief wstawiaj¹ca obiekt typu T w wybrane miejsce.
-    ///
+    /// <clean>
     /// \return Zwraca true je¿eli podane miejsce wstawienia jest prawid³owe, w przeciwnym wypadku zwraca false.
     virtual bool insert(int, T const&) = 0;
 
-
     /// \brief Metoda zwracaj¹ca wartoœæ elementu
-    ///
+    /// <clean>
     /// \return zwraca wartoœæ w pojemniku. Zak³adamy ¿e indeksowanie wartoœci rozpoczynamy od zera.
     virtual T& at(int) const = 0;
 
-
     /// \brief Metoda zwracaj¹ca iloœæ elementów
-    ///
+    /// <clean>
     /// \return zwraca iloœæ elementów w pojemniku
     virtual int size(void) const = 0;
 
-
     /// \brief Metoda usuwaj¹ca wybrany element:
-    ///
+    /// <clean>
     /// \return usuwa element na danym miejscu. Zwraca true je¿eli podane miejsce usuniêcia jest prawid³owe, w przeciwnym wypadku zwraca false
     virtual bool remove(int) = 0;
+
+    /// \brief Metoda niszczaca kontener
+    /// <clean>
+    virtual void kill_them_all(void) = 0;
 };
     /////////////////
     //METODY BAZOWE//
@@ -297,7 +294,7 @@ aghContainer<T> & aghContainer<T>::operator=(const aghContainer<T> & aghCt)
 
     this->kill_them_all();
 
-
+    *this = aghCt;
 
     return *this;
 }
@@ -340,9 +337,9 @@ aghContainer<T>& aghContainer<T>::operator<<(aghContainer<T> const& right)
 {
     return this->addall(right);
 }
-
-/*template <typename T>
-ostream& aghContainer<T> operator<<(ostream& os, aghContainer<T> const& right)
+/*
+template <typename T>
+ostream& operator<<(ostream& os, aghContainer<T> const& right)
 {
     int Container_Size = right.size();
 
@@ -352,8 +349,8 @@ ostream& aghContainer<T> operator<<(ostream& os, aghContainer<T> const& right)
     }
 
     return os;
-}*/
-
+}
+*/
 
 
 

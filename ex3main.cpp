@@ -5,8 +5,8 @@
 #include <iostream>
 
 // ---------------------------------------------------------
-//using namespace std;
-/*
+using namespace std;
+
 TEST_CASE( "wektory spełniają wymagania podane na wiki", "[aghVector]" ) {
     aghVector<aghVector<int> > a;
 
@@ -108,4 +108,4 @@ TEST_CASE( "wektory spełniają wymagania podane na wiki", "[aghVector]" ) {
 
     delete c1;
 }
-*/
+
