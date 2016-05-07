@@ -8,9 +8,10 @@ class aghVector: public aghContainer<T>
 {
 private:
 
-    T *tab_ptr;         ///<
-    int total_length;   ///<
-    int last_item;      ///<
+    T *tab_ptr;         ///< wskaznik do tablicy typow T
+    int total_length;   ///< calkowity rozmiar zaalokowanej pamieci
+    int last_item;      ///< index ostatniego poprawnego elementu
+    int Size;           ///< ilosc elementow w vectorze
 
 
 public:
@@ -79,6 +80,10 @@ public:
     /// <done>
     virtual void kill_them_all(void);
 
+    /// \brief Metoda Zwracajaca index ostatniego elementu
+    /// <done>
+    virtual int last_index(void);
+
     //////////////////////////
     //PRZELADOWANE OPERATORY//
     //////////////////////////
@@ -92,27 +97,28 @@ template <typename T>
 aghVector<T>::aghVector()
 {
     this->allocate_memory(5);
+    this->Size = 0;
     this->total_length = 5;
-    this->last_item = 0;
+    this->last_item = -1;
 }
 template <typename T>
 aghVector<T>::aghVector(int init_length)
 {
     this->allocate_memory(init_length);
+    this->Size = 0;
     this->total_length = init_length;
-    this->last_item = 0;
+    this->last_item = -1;
 
 }
 template <typename T>
 aghVector<T>::aghVector(aghContainer<T> &arg_obj)
 {
-
-
     aghContainer<T> *base_ptr = &arg_obj;
 
     aghVector<T> *derived_ptr = dynamic_cast< aghVector<T> *>(base_ptr);
 
     this->allocate_memory(derived_ptr->total_length);
+    this->Size = derived_ptr->Size;
     this->total_length = derived_ptr->total_length;
     this->last_item = derived_ptr->last_item;
 
@@ -134,6 +140,7 @@ template <typename T>
 void aghVector<T>::allocate_memory(int new_size)
 {
     this->tab_ptr = new T [new_size +1];
+
 }
 template <typename T>
 void aghVector<T>::free_memory(void)
@@ -141,7 +148,8 @@ void aghVector<T>::free_memory(void)
     delete []tab_ptr;
     tab_ptr = NULL;
     this->total_length = 0;
-    this->last_item = 0;
+    this->Size = 0;
+    this->last_item = -1;
 }
 
     ///////////////////////////////
@@ -168,6 +176,7 @@ void aghVector<T>::broaden_container_memory(void)
     T *bufor = new T [new_size + 1];
 
     int last_prev_element = this->last_item;
+    int prev_Size = this->Size;
 
     for(int i = 0;i <= last_prev_element; i++)
     {
@@ -179,6 +188,7 @@ void aghVector<T>::broaden_container_memory(void)
     this->tab_ptr = bufor;
 
     this->total_length = new_size;
+    this->Size = prev_Size;
     this->last_item = last_prev_element;
 }
 template <typename T>
@@ -187,6 +197,11 @@ bool aghVector<T>::insert(int position, T const& item)
     if(position <= total_length)
     {
         this->tab_ptr[position] = item;
+        if(position > this->last_item)
+        {
+            this->Size++;
+            this->last_item = position;
+        }
         return true;
 
     }else
@@ -199,7 +214,7 @@ T& aghVector<T>::at(int position) const throw(aghException)
 {
     if(position > last_item)
     {
-        throw aghException(0, "Index out of range", __FILE__, __LINE__);
+        throw aghException(0, "Index refers to undefined element", __FILE__, __LINE__);
 
     }else
     {
@@ -209,7 +224,7 @@ T& aghVector<T>::at(int position) const throw(aghException)
 template <typename T>
 int aghVector<T>::size(void) const
 {
-    return this->last_item;
+    return this->Size;
 }
 template <typename T>
 bool aghVector<T>::remove(int position)
@@ -220,7 +235,9 @@ bool aghVector<T>::remove(int position)
     {
         this->tab_ptr[i] = this->tab_ptr[i+1];
     }
-    this->last_item += -1;
+    //DOPRACOWAC
+    this->last_item--;
+    this->Size--;
 
     return true;
 }
@@ -228,6 +245,11 @@ template <typename T>
 void aghVector<T>::kill_them_all(void)
 {
     this->free_memory();
+}
+template <typename T>
+int aghVector<T>::last_index(void)
+{
+    return this->last_item;
 }
 
     //////////////////////////
@@ -244,6 +266,7 @@ aghVector<T>& aghVector<T>::operator=(const aghVector<T> & aghVc)
     this->allocate_memory(aghVc.total_length);
 
     this->total_length = aghVc.total_length;
+    this->Size = aghVc.Size;
 
     for(int i = 0; i <= last_item; i++)
     {

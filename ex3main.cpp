@@ -1,5 +1,5 @@
-#define CATCH_CONFIG_MAIN
-#include "catch.h"
+//#define CATCH_CONFIG_MAIN
+//#include "catch.h"
 
 #include "aghInclude.h"
 #include <iostream>
@@ -7,6 +7,21 @@
 // ---------------------------------------------------------
 using namespace std;
 
+int main(void)
+{
+    aghVector<aghVector<int> > a;
+
+    aghContainer<int> *c1 = new aghVector<int>;
+    aghContainer<int> *c2;
+
+     a << *((aghVector<int> *)c1);
+
+
+    return 0;
+}
+
+
+/*
 TEST_CASE( "wektory spełniają wymagania podane na wiki", "[aghVector]" ) {
     aghVector<aghVector<int> > a;
 
@@ -109,3 +124,4 @@ TEST_CASE( "wektory spełniają wymagania podane na wiki", "[aghVector]" ) {
     delete c1;
 }
 
+*/
