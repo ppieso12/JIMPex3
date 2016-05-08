@@ -6,56 +6,17 @@
 
 // ---------------------------------------------------------
 using namespace std;
-/*
-int main(void)
-{
+
+TEST_CASE( "wektory spełniają wymagania podane na wiki", "[aghVector]" ) {
     aghVector<aghVector<int> > a;
 
     aghContainer<int> *c1 = new aghVector<int>;
     aghContainer<int> *c2;
-
-    // a << *((aghVector<int> *)c1);
-    c1->append(1);
-    //c1->insert(0, 1 + 1);
-    //c1->insert(c1->size(), c1->size());
-    c1->append(2);
-    c1->append(3);
-    c1->append(4);
-    c1->append(5);
-    c1->append(6);
-    c1->append(7);
-    c1->append(8);
-    c1->insert(5, 200);
-    c1->append(8);
-    c1->append(8);
-    c1->append(8);
-
-   cout << *c1;
-
-
-
-
-
-    return 0;
-}
-*/
-
-
-TEST_CASE( "wektory spełniają wymagania podane na wiki", "[aghVector]" ) {
-    aghVector<int> a;
-
-    aghContainer<int> *c1 = new aghVector<int>;
-    aghContainer<int> *c2;
-
-    a << 4;
-
-
+    a << *((aghVector<int> *)c1);
 
     c1->append(3);
     c1->insert(0, 1 + 1);
     c1->insert(c1->size(), c1->size());
-
-
 
 
     SECTION( "dodawanie do pojemnika stalych, zmiennych, tymczasowych" ) {
@@ -66,10 +27,7 @@ TEST_CASE( "wektory spełniają wymagania podane na wiki", "[aghVector]" ) {
         }
     }
 
-
-     cout << "test" << endl;
-
-    /*SECTION( "konstruktor kopiujący" ) {
+    SECTION( "konstruktor kopiujący" ) {
         c2 = new aghVector<int>(*c1);
 
         REQUIRE( c2->size() == 3 );
@@ -118,7 +76,7 @@ TEST_CASE( "wektory spełniają wymagania podane na wiki", "[aghVector]" ) {
 
         for (int i = 3; i >= 0; i--) {
             a.at(0) += i + 1;
-        }c2 = new aghVector<int>(*c1);
+        }
 
         REQUIRE( a.at(0).size() == 4 );
         int ttab11[] = {4, 3, 2, 1};
@@ -148,7 +106,5 @@ TEST_CASE( "wektory spełniają wymagania podane na wiki", "[aghVector]" ) {
         delete c2;
     }
 
-    delete c1;*/
+    delete c1;
 }
-
-

@@ -1,11 +1,27 @@
+/**
+* \file aghContainer.h
+* \author
+* \date 08.05.16
+* \version 1.0
+* \brief Plik naglowkowy zwierajacy interfejs kontenera
+*/
 #ifndef AGHCONTAINER_H_INCLUDED
 #define AGHCONTAINER_H_INCLUDED
-
+// --------------------------------------------------------------
 #include <iostream>
 #include "aghException.h"
-
+// --------------------------------------------------------------
 using namespace std;
-
+// --------------------------------------------------------------
+template <typename U>
+class aghVector;
+// --------------------------------------------------------------
+/**
+* \class aghContainer
+* \author
+* \date 08.05.16
+* \brief Klasa abstrakcyjna reprezentujaca interfejs kontenera
+*/
 template <typename T>
 class aghContainer
 {
@@ -13,9 +29,9 @@ private:
 
 public:
 
-    //aghContainer(const aghContainer<T> &obj);
-
-    //virtual ~aghContainer();
+    /// \brief Virtualny destruktor
+    /// <done>
+    virtual ~aghContainer(){};
 
     /////////////////
     //METODY BAZOWE//
@@ -60,8 +76,8 @@ public:
     //////////////////////////
 
     /// \brief Przeciazony operator przypisania
-    /// <maybe wrong?>
-    aghContainer & operator=(const aghContainer & aghCt);
+    /// <done>
+    aghContainer & operator=(aghContainer & aghCt);
 
     /// \brief sprawdza czy zawartoœæ pojemników jest taka sama.
     /// <done>
@@ -92,9 +108,8 @@ public:
     aghContainer<T>& operator<<(aghContainer<T> const& right);
 
     /// \brief wypisuje zawartoœæ pojemnika na strumieñ.
-    /// <maybe wrong?>
+    /// <done>
     template <typename U> friend ostream& operator<<(ostream&, aghContainer<U> const&);
-    //template <typename U> friend ostream& operator<<(ostream&, aghContainer<U> const& right);
 
     /// \brief Metoda pomocnicza dodajaca element ze zwracaniem referencji
     /// <done>
@@ -111,14 +126,6 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
     //METODY WIRTUALNE KTORYCH IMPLEMENTACJA ZOSTANIE ZAWARTA W KLASACH POCHODNYCH//
     ////////////////////////////////////////////////////////////////////////////////
-
-    /// \brief Metoda sprawdzajaca czy w okreslonym kontenerze znajduje sie wolny obszar w zaalokowanej pamieci
-    /// <clean>
-    //virtual bool is_free_space(void) = 0;
-
-    /// \brief Metoda rozszerzajaca rozmiar kontenera
-    /// <clean>
-    //virtual void broaden_container_memory(void) = 0;
 
     /// \brief wstawiaj¹ca obiekt typu T w wybrane miejsce.
     /// <clean>
@@ -147,25 +154,29 @@ public:
     /// \brief Metoda Zwracajaca index ostatniego elementu
     /// <clean>
     virtual int last_index(void) const = 0;
+
+    /// \brief Metoda Zwracajaca index ostatniego zaalkowanego elementu
+    /// <clean>
+    virtual int last_toal_index(void) const = 0;
 };
+// --------------------------------------------------------------
     /////////////////
     //METODY BAZOWE//
     /////////////////
-
+// --------------------------------------------------------------
 template <typename T>
 void aghContainer<T>::append(T const &item)
 {
     int last_item = this->last_index();
-    cout << last_item << endl;
     this->insert(last_item + 1, item);
-
 }
+// --------------------------------------------------------------
 template <typename T>
 bool aghContainer<T>::replace(int Chosen_position, T const &item)
 {
-    int Container_Size = this->size();
+    int Container_Length_Mem = this->last_total_index();
 
-    if(Chosen_position <= Container_Size)
+    if(Chosen_position <= Container_Length_Mem)
     {
         this->insert(Chosen_position, item);
         return true;
@@ -175,16 +186,18 @@ bool aghContainer<T>::replace(int Chosen_position, T const &item)
         return false;
     }
 }
+// --------------------------------------------------------------
 template <typename T>
 void aghContainer<T>::clear(void)
 {
-    int Container_Size = this->size();
+    int Container_Length = this->last_index();
 
-    for(int i = Container_Size; i >= 0; i--)
+    for(int i = Container_Length; i >= 0; i--)
     {
         this->remove(i);
     }
 }
+// --------------------------------------------------------------
 template <typename T>
 bool aghContainer<T>::isEmpty(void)
 {
@@ -194,12 +207,13 @@ bool aghContainer<T>::isEmpty(void)
 
     return logic_value;
 }
+// --------------------------------------------------------------
 template <typename T>
 int aghContainer<T>::go_through_container(T const& _value, int _from = 0) const
 {
-    int Container_Size = this->size();
+    int Container_Length = this->last_index();
 
-    for(int i = _from; i <= Container_Size; i++)
+    for(int i = _from; i <= Container_Length; i++)
     {
         T tmp_value = this->at(i);
 
@@ -211,7 +225,7 @@ int aghContainer<T>::go_through_container(T const& _value, int _from = 0) const
 
     return -1;
 }
-
+// --------------------------------------------------------------
 template <typename T>
 int aghContainer<T>::indexOf(T const& _value, int _from = 0) const
 {
@@ -231,22 +245,26 @@ bool aghContainer<T>::contains(T const& _value, int _from = 0) const
         return false;
     }
 }
-
+// --------------------------------------------------------------
     //////////////////////////
     //PRZELADOWANE OPERATORY//
     //////////////////////////
-
+// --------------------------------------------------------------
 template <typename T>
 bool aghContainer<T>::is_the_same(aghContainer<T> const& right)
 {
     bool Sizes;
+    bool Last_Positions;
 
     int Container_Size = this->size();
     int Container_Right_Size = right.size();
+    int Last_Pos = this->last_index();
+    int Last_Right_Pos = right.last_index();
 
     Sizes = (Container_Size == Container_Right_Size);
+    Last_Positions = (Last_Pos == Last_Right_Pos);
 
-    if(Sizes)
+    if(Sizes&&Last_Positions)
     {
         for(int i = 0; i < Container_Right_Size; i++)
         {
@@ -263,38 +281,50 @@ bool aghContainer<T>::is_the_same(aghContainer<T> const& right)
 
     return true;
 }
+// --------------------------------------------------------------
 template <typename T>
 bool aghContainer<T>::operator==(aghContainer<T> const& right)
 {
     return this->is_the_same(right);
 }
+// --------------------------------------------------------------
 template <typename T>
 bool aghContainer<T>::operator!=(aghContainer<T> const& right)
 {
     return !(this->is_the_same(right));
 }
-
+// --------------------------------------------------------------
 template <typename T>
 T& aghContainer<T>::operator[](int n) const throw(aghException)
 {
-    int Container_Size = this->size();
+    int Container_length = this->last_index();
 
-    if(Container_Size < n) throw aghException(0, "Index out of range", __FILE__, __LINE__);
+    if(Container_length < n) throw aghException(0, "Index out of range", __FILE__, __LINE__);
 
     return this->at(n);
 }
-
+// --------------------------------------------------------------
 template <typename T>
-aghContainer<T> & aghContainer<T>::operator=(const aghContainer<T> & aghCt)
+aghContainer<T> & aghContainer<T>::operator=(aghContainer<T> &aghCt)
 {
+    /*NIE MAM LEPSZEGO POMYSLU*/
     if(this == &aghCt) return *this;
 
-    this->kill_them_all();
+    //DLA ARGUMENTU aghCt
+    aghContainer<T> *base_ptr = &aghCt;
 
-    *this = aghCt;
+    aghVector<T> *derived_ptr_argVc = dynamic_cast< aghVector<T> *>(base_ptr); //rzutowanie w dol hierarchii
+
+    //DLA *this
+    aghContainer<T> *base_ptr_this = this;
+
+    aghVector<T> *derived_ptr_this = dynamic_cast< aghVector<T> *>(base_ptr_this); //rzutowanie w dol hierarchii
+
+    *derived_ptr_this = *derived_ptr_argVc;
 
     return *this;
 }
+// --------------------------------------------------------------
 template <typename T>
 aghContainer<T>& aghContainer<T>::addone(T const& element)
 {
@@ -302,10 +332,10 @@ aghContainer<T>& aghContainer<T>::addone(T const& element)
 
     return *this;
 }
+// --------------------------------------------------------------
 template <typename T>
 aghContainer<T>& aghContainer<T>::addall(aghContainer<T> const& right)
 {
-
     int Container_Right_Size = right.last_index();
 
     for(int i = 0; i <= Container_Right_Size; i++)
@@ -315,52 +345,46 @@ aghContainer<T>& aghContainer<T>::addall(aghContainer<T> const& right)
 
     return *this;
 }
+// --------------------------------------------------------------
 template <typename T>
 aghContainer<T>& aghContainer<T>::operator+=(aghContainer<T> const& right)
 {
     return this->addall(right);
 }
+// --------------------------------------------------------------
 template <typename T>
 aghContainer<T>& aghContainer<T>::operator+=(T const& element)
 {
     return this->addone(element);
 }
+// --------------------------------------------------------------
 template <typename T>
 aghContainer<T>& aghContainer<T>::operator<<(T const& element)
 {
-    cout << "WIELKITEST" << endl;
     return this->addone(element);
 }
+// --------------------------------------------------------------
 template <typename T>
 aghContainer<T>& aghContainer<T>::operator<<(aghContainer<T> const& right)
 {
-    cout << "WIELKITEST" << endl;
     return this->addall(right);
 }
-
+// --------------------------------------------------------------
 template <typename T>
 ostream& operator<<(ostream& os, aghContainer<T> const& right)
 {
-    //cout << "TEST!!!" <<endl;
     int last_elem = right.last_index();
 
-    if(last_elem == -1)
+    if(last_elem < 0)
     {
         os << "EMPTY" << endl;
     }
 
     for(int i = 0; i <= last_elem; i++)
     {
-        os << i << "." << right.at(i) << endl;
+        os << i + 1 << "." << right.at(i) << endl;
     }
 
     return os;
 }
-
-
-
-
-
 #endif // AGHCONTAINER_H_INCLUDED
-
-
