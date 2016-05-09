@@ -6,6 +6,14 @@
 * \brief Plik naglowkowy reprezentujacy szablon V E C T O R
 */
 // --------------------------------------------------------------
+/**
+* === TDM-GCC Compiler Suite for Windows ===
+* ---        GCC 4.7 & 4.8 Series        ---
+* ***   Standard MinGW 32-bit Edition    ***
+* ///  (Ubuntu 4.8.4-2ubuntu1~14.04.01)  ///
+* ///         gcc version 4.8.4          ///
+* valgrind --tool=memcheck --leak-check=full
+*/
 #ifndef AGHVECTOR_H_INCLUDED
 #define AGHVECTOR_H_INCLUDED
 // --------------------------------------------------------------
@@ -81,7 +89,7 @@ public:
     /// <done>
     void broaden_container_memory(int new_size);
 
-    /// \brief Metoda rozszerzajaca rozmiar kontenera o 50% (rozmiar rzutowany do int)
+    /// \brief Metoda zwracjaca pozycje ostatniego istniejacego (poprawnego) elementu
     /// <done>
     int last_elem_pos(void);
 
@@ -199,11 +207,14 @@ void aghVector<T>::allocate_memory(int new_size)
 template <typename T>
 void aghVector<T>::free_memory(void)
 {
-    delete tab_ptr;
-    tab_ptr = NULL;
-    this->total_length = 0;
-    this->Size = 0;
-    this->last_item = -1;
+    if(tab_ptr != NULL)
+    {
+        delete []tab_ptr;
+        tab_ptr = NULL;
+        this->total_length = 0;
+        this->Size = 0;
+        this->last_item = -1;
+    }
 }
 // --------------------------------------------------------------
 template <typename T>
@@ -250,7 +261,6 @@ void aghVector<T>::broaden_container_memory(int new_size)
         bufor[i].exist = false;
     }
     this->free_memory();
-    this->allocate_memory(new_size);
 
     this->tab_ptr = bufor;
 

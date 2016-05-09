@@ -3,7 +3,15 @@
 * \author
 * \date 08.05.16
 * \version 1.0
-* \brief Plik naglowkowy zwierajacy interfejs kontenera
+* \brief Plik naglowkowy zwierajacy interfejs kontenera //Sprawdzony pod gcc 4.8.4
+*/
+/**
+* === TDM-GCC Compiler Suite for Windows ===
+* ---        GCC 4.7 & 4.8 Series        ---
+* ***   Standard MinGW 32-bit Edition    ***
+* ///  (Ubuntu 4.8.4-2ubuntu1~14.04.01)  ///
+* ///         gcc version 4.8.4          ///
+* valgrind --tool=memcheck --leak-check=full
 */
 #ifndef AGHCONTAINER_H_INCLUDED
 #define AGHCONTAINER_H_INCLUDED
@@ -155,7 +163,7 @@ public:
     /// <clean>
     virtual int last_index(void) const = 0;
 
-    /// \brief Metoda Zwracajaca index ostatniego zaalkowanego elementu
+    /// \brief Metoda Zwracajaca index ostatniego zaalokowanego elementu
     /// <clean>
     virtual int last_toal_index(void) const = 0;
 };
@@ -307,7 +315,7 @@ T& aghContainer<T>::operator[](int n) const throw(aghException)
 template <typename T>
 aghContainer<T> & aghContainer<T>::operator=(aghContainer<T> &aghCt)
 {
-    /*NIE MAM LEPSZEGO POMYSLU*/
+    /*NIE MAM LEPSZEGO POMYSLU - w najblizszym czasie Dopisac warunki dla typow - by zyskac uniwersalnosc kontenera*/
     if(this == &aghCt) return *this;
 
     //DLA ARGUMENTU aghCt
